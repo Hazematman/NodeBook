@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+}
+
+#graph_view 
+{
+    background-color: #737373;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+}
+
+.node_container 
+{
+    background-color: #ededed;
+}
+
+.node_title
+{
+    padding: 2px;
+    font-size: 150%;
+    color: #ededed;
+    background-color: #22c6c7; 
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.node_body
+{
+    padding: 2px;
+    background-color: #ededed;
+    overflow: auto;
+    word-wrap: break-word;
+}
+
+.node_resizer
+{
+    background-color: #ededed;
+    content:url("./resize.png");
+    float: right;
+    width: 16px;
+    height: 16px;
+    padding: 2px;
+}
