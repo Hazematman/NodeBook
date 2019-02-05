@@ -1,6 +1,8 @@
 "use strict"
 console.log("Hello");
 
+var view_state = {dragging:false, x:0, y:0, zoom:100, dragging_node:false};
+
 function title_edit(e)
 {
     if(e.which == 13)
@@ -8,6 +10,68 @@ function title_edit(e)
         e.preventDefault();
     }
 }
+
+function set_view_state()
+{
+    var view = document.getElementById("graph_view");
+    var scale_amt = view_state.zoom / 100.0;
+    var x = view_state.x;
+    var y = view_state.y;
+    view.style.transform = `scale(${scale_amt}) translate(${x}px, ${y}px)`;
+}
+
+function on_view_drag(evt)
+{
+    if(view_state.dragging)
+    {
+        var zoom_factor = view_state.zoom / 100.0
+        var newX = evt.clientX;
+        var newY = evt.clientY;
+
+        var deltaX = (newX - view_state.move_x)/zoom_factor;
+        var deltaY = (newY - view_state.move_y)/zoom_factor;
+
+        view_state.move_x = newX;
+        view_state.move_y = newY;
+
+        view_state.x += deltaX;
+        view_state.y += deltaY;
+
+        set_view_state();
+    }
+}
+
+function stop_view_drag(evt)
+{
+    view_state.dragging = false;
+
+    var view = document.getElementById("graph_container"); 
+    view.removeEventListener("mousemove", on_view_drag);
+    view.removeEventListener("mouseup", stop_view_drag);
+}
+
+function start_view_drag(evt)
+{
+    if(!view_state.dragging_node)
+    {
+        view_state.dragging = true;
+        view_state.move_x = evt.clientX;
+        view_state.move_y = evt.clientY;
+
+        var view = document.getElementById("graph_container"); 
+        view.addEventListener("mousemove", on_view_drag);
+        view.addEventListener("mouseup", stop_view_drag);
+    }
+}
+
+function zoom_event(evt)
+{
+    view_state.zoom -= evt.deltaY;
+    set_view_state();
+}
+
+document.getElementById("graph_container").addEventListener("mousedown", start_view_drag);
+document.getElementById("graph_container").addEventListener("wheel", zoom_event);
 
 function resize_node(node, width, height)
 {
@@ -41,11 +105,12 @@ function create_node()
     {
         if(node.move_dragging)
         {
+            var zoom_factor = view_state.zoom / 100.0
             var newX = evt.clientX;
             var newY = evt.clientY;
 
-            var deltaX = newX - node.move_x;
-            var deltaY = newY - node.move_y;
+            var deltaX = (newX - node.move_x)/zoom_factor;
+            var deltaY = (newY - node.move_y)/zoom_factor;
 
             node.move_x = newX;
             node.move_y = newY;
@@ -57,8 +122,9 @@ function create_node()
     var stop_move_drag = function(evt)
     {
         node.move_dragging = false;
+        view_state.dragging_node = false;
 
-        var view = document.getElementById("graph_view"); 
+        var view = document.getElementById("graph_container"); 
         view.removeEventListener("mousemove", on_move_drag);
         view.removeEventListener("mouseup", stop_move_drag);
     }
@@ -66,10 +132,12 @@ function create_node()
     var start_move_drag = function(evt)
     {
         node.move_dragging = true;
+        view_state.dragging_node = true;
+
         node.move_x = evt.clientX;
         node.move_y = evt.clientY;
 
-        var view = document.getElementById("graph_view"); 
+        var view = document.getElementById("graph_container"); 
         view.addEventListener("mousemove", on_move_drag);
         view.addEventListener("mouseup", stop_move_drag);
     }
@@ -94,11 +162,12 @@ function create_node()
     {
         if(node.dragging)
         {
+            var zoom_factor = view_state.zoom / 100.0
             var newX = evt.clientX;
             var newY = evt.clientY;
 
-            var deltaX = newX - node.x;
-            var deltaY = newY - node.y;
+            var deltaX = (newX - node.x)/zoom_factor;
+            var deltaY = (newY - node.y)/zoom_factor;
 
             node.x = newX;
             node.y = newY;
@@ -110,18 +179,20 @@ function create_node()
     var stop_resize_drag = function(evt)
     {
         node.dragging = false;
+        view_state.dragging_node = false;
 
-        var view = document.getElementById("graph_view"); 
+        var view = document.getElementById("graph_container"); 
         view.removeEventListener("mousemove", on_resize_drag);
         view.removeEventListener("mouseup", stop_resize_drag);
     }
     var start_resize_drag = function(evt)
     {
         node.dragging = true;
+        view_state.dragging_node = true;
         node.x = evt.clientX;
         node.y = evt.clientY;
 
-        var view = document.getElementById("graph_view"); 
+        var view = document.getElementById("graph_container"); 
         view.addEventListener("mousemove", on_resize_drag);
         view.addEventListener("mouseup", stop_resize_drag);
     }
