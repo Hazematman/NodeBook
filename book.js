@@ -35,6 +35,7 @@ function create_node()
     node.container.style.left = "10px";
     node.container.style.width = "200px";
     node.container.classList.add("node_container");
+    node.container.classList.add("node_transform");
 
     var on_move_drag = function(evt)
     {
