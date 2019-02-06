@@ -20,6 +20,14 @@ function set_view_state()
     view.style.transform = `scale(${scale_amt}) translate(${x}px, ${y}px)`;
 }
 
+function reset_view()
+{
+    view_state.zoom = 100;
+    view_state.x = 0;
+    view_state.y = 0;
+    set_view_state();
+}
+
 function on_view_drag(evt)
 {
     if(view_state.dragging)
@@ -52,7 +60,11 @@ function stop_view_drag(evt)
 
 function start_view_drag(evt)
 {
-    if(!view_state.dragging_node)
+    var view = document.getElementById("graph_view");
+    var container = document.getElementById("graph_container");
+    var element_over = document.elementFromPoint(evt.clientX, evt.clientY);
+
+    if(!view_state.dragging_node && (element_over === view || element_over === container))
     {
         view_state.dragging = true;
         view_state.move_x = evt.clientX;
@@ -66,8 +78,15 @@ function start_view_drag(evt)
 
 function zoom_event(evt)
 {
-    view_state.zoom -= evt.deltaY;
-    set_view_state();
+    var view = document.getElementById("graph_view");
+    var container = document.getElementById("graph_container");
+    var element_over = document.elementFromPoint(evt.clientX, evt.clientY);
+
+    if(element_over === view || element_over === container)
+    {
+        view_state.zoom -= evt.deltaY;
+        set_view_state();
+    }
 }
 
 document.getElementById("graph_container").addEventListener("mousedown", start_view_drag);
