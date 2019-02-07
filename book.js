@@ -111,7 +111,7 @@ function move_node(node, x, y)
 
 function create_node()
 {
-    var node = {dragging:false, move_dragging:false, width:200, height:200, top: 10, left: 10};
+    var node = {dragging:false, move_dragging:false, width:200, height:200, top: 10, left: 10, children:[]};
     node.container = document.createElement("div");
     node.container.style.position = "absolute";
     node.container.style.top = "10px";
@@ -216,15 +216,30 @@ function create_node()
         view.addEventListener("mouseup", stop_resize_drag);
     }
 
+    var create_child_node = function(evt)
+    {
+        var new_node = create_node();
+        node.children.push(new_node);
+    }
+
     node.resizer = document.createElement("div");
     node.resizer.classList.add("node_resizer");
     node.resizer.draggable = "false";
 
     node.resizer.addEventListener("mousedown", start_resize_drag);
+
+    // Create button to add new node linked to this one
+    node.add_button = document.createElement("div");
+    node.add_button.classList.add("node_add");
+    node.add_button.innerHTML = "Add Node";
+    node.add_button.draggable = "true";
+
+    node.add_button.addEventListener("mousedown", create_child_node);
     
     node.container.appendChild(node.title);
     node.container.appendChild(node.body);
     node.container.appendChild(node.resizer);
+    node.container.appendChild(node.add_button);
 
     document.getElementById("graph_view").appendChild(node.container);
 

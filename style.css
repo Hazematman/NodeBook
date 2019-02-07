@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    font-family: "sans";
 }
 
 #graph_view 
@@ -38,6 +39,10 @@ body {
     background-color: #22c6c7; 
     white-space: nowrap;
     overflow: hidden;
+    border-style: solid;
+    border-width: 0;
+    border-bottom-width: 2px;
+    border-color: #20706d;
 }
 
 .node_body
@@ -53,9 +58,20 @@ body {
 {
     background-color: #ededed;
     content:url("./resize.png");
-    float: right;
     width: 16px;
     height: 16px;
     padding: 2px;
     cursor: se-resize;
+    margin-left: auto;
+}
+
+.node_add {
+	background-color: #595959;
+	border-style: solid;
+	border-width: 0;
+	border-bottom-width: 2px;
+	color: #ededed;
+	padding: 2px;
+	border-color: #000;
+    cursor: pointer;
 }
