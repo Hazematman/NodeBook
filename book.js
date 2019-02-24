@@ -1,5 +1,7 @@
 "use strict"
-console.log("Hello");
+
+/* Start of program preamble for static data */
+var svgNS = "http://www.w3.org/2000/svg";
 
 var view_state = {dragging:false, x:0, y:0, zoom:100, dragging_node:false};
 
@@ -109,9 +111,39 @@ function move_node(node, x, y)
     node.container.style.left = x.toString() + "px";
 }
 
-function create_node()
+function create_link(node, child_node)
 {
-    var node = {dragging:false, move_dragging:false, width:200, height:200, top: 10, left: 10, children:[]};
+    var starting_point_x = node.left;
+    var starting_point_y = node.top;
+
+    var ending_point_x = child_node.left;
+    var ending_point_y = child_node.top;
+
+    var svg = document.createElementNS(svgNS, "svg");
+    svg.style.width = `${Math.abs(starting_point_x - ending_point_x)}px`;
+    svg.style.height = `${Math.abs(starting_point_y - ending_point_y)}px`;
+
+    var path_string = `M ${starting_point_x} ${starting_point_y} L ${ending_point_x} ${ending_point_y}`;
+    var line = document.createElementNS(svgNS, "path");
+    line.setAttributeNS(null, "d", path_string);
+    line.setAttributeNS(null, "stroke", "black");
+
+    svg.appendChild(line)
+
+    var view = document.getElementById("graph_view");
+    view.appendChild(svg);
+}
+
+function create_node(parent_node)
+{
+    var node = 
+        {
+            dragging:false, 
+            move_dragging:false, width:200, height:200, top: 10, left: 10, 
+            children:[], 
+            parent_node: parent_node
+        };
+
     node.container = document.createElement("div");
     node.container.style.position = "absolute";
     node.container.style.top = "10px";
@@ -218,8 +250,9 @@ function create_node()
 
     var create_child_node = function(evt)
     {
-        var new_node = create_node();
+        var new_node = create_node(node);
         node.children.push(new_node);
+        create_link(node, new_node);
     }
 
     node.resizer = document.createElement("div");
