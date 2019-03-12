@@ -109,29 +109,76 @@ function move_node(node, x, y)
 
     node.container.style.top = y.toString() + "px";
     node.container.style.left = x.toString() + "px";
+
+    for(var i = 0; i < node.links.length; i++)
+    {
+        modifiy_link(node.links[i]);
+    }
 }
 
-function create_link(node, child_node)
+function modifiy_link(link)
 {
+    var node = link.node;
+    var child_node = link.child_node;
+
     var starting_point_x = node.left;
     var starting_point_y = node.top;
 
     var ending_point_x = child_node.left;
     var ending_point_y = child_node.top;
 
-    var svg = document.createElementNS(svgNS, "svg");
-    svg.style.width = `${Math.abs(starting_point_x - ending_point_x)}px`;
-    svg.style.height = `${Math.abs(starting_point_y - ending_point_y)}px`;
+    var min_x = Math.min(starting_point_x, ending_point_x)
+    var max_x = Math.max(starting_point_x, ending_point_x)
 
-    var path_string = `M ${starting_point_x} ${starting_point_y} L ${ending_point_x} ${ending_point_y}`;
+    var min_y = Math.min(starting_point_y, ending_point_y)
+    var max_y = Math.max(starting_point_y, ending_point_y)
+
+    var width = max_x - min_x;
+    var height = max_y - min_y;
+
+    link.svg.style.width = `${width}px`;
+    link.svg.style.height = `${height}px`;
+    link.svg.style.left = `${min_x}px`;
+    link.svg.style.top = `${min_y}px`;
+
+
+    // We need to get the start and end points of the line in the
+    // transformed space
+    var new_start_x = starting_point_x - min_x;
+    var new_start_y = starting_point_y - min_y;
+    
+    var new_end_x = ending_point_x - min_x;
+    var new_end_y = ending_point_y - min_y;
+
+    var path_string = `M ${new_start_x} ${new_start_y} L ${new_end_x} ${new_end_y}`;
+    link.line.setAttributeNS(null, "d", path_string);
+}
+
+function create_link(node, child_node)
+{
+    // TODO figure out how to handle pointer events on lines
+    var svg = document.createElementNS(svgNS, "svg");
+    svg.setAttributeNS(null, "pointer-events", "none");
+    svg.style.position = "absolute";
+
     var line = document.createElementNS(svgNS, "path");
-    line.setAttributeNS(null, "d", path_string);
+    line.setAttributeNS(null, "pointer-events", "none");
     line.setAttributeNS(null, "stroke", "black");
 
     svg.appendChild(line)
 
     var view = document.getElementById("graph_view");
     view.appendChild(svg);
+
+    // Create a link object based on this newly made SVG
+    // and then move it so it is drawn right
+    var link = {node: node, child_node: child_node, svg: svg, line: line};
+    modifiy_link(link);
+
+    // Add this link to both nodes so that they
+    // can move the link when the nodes move
+    node.links.push(link);
+    child_node.links.push(link);
 }
 
 function create_node(parent_node)
@@ -140,8 +187,9 @@ function create_node(parent_node)
         {
             dragging:false, 
             move_dragging:false, width:200, height:200, top: 10, left: 10, 
-            children:[], 
-            parent_node: parent_node
+            children: [], 
+            parent_node: parent_node,
+            links: [],
         };
 
     node.container = document.createElement("div");

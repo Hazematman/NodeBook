@@ -3,6 +3,10 @@ body {
     font-family: "sans";
 }
 
+[contenteditable]:focus {
+    outline: 0px solid transparent;
+}
+
 #graph_view 
 {
     background-color: #737373;
