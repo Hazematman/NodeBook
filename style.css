@@ -26,6 +26,30 @@ body
     overflow: hidden;
 }
 
+#title_bar {
+    height: 64px;
+	background-color: #535353;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-bottom: 4px;
+	border-color: #292929;
+	border-style: solid;
+}
+
+.add_button
+{
+    display:inline-flex;
+    background-color: #535353;
+    cursor: pointer;
+}
+
+.add_button:hover
+{
+    background-color: #333333;
+    cursor: pointer;
+}
+
 .node_transform
 {
     transform-origin: 0px 0px;

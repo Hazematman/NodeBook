@@ -108,6 +108,22 @@ function move_node(node, x, y)
     }
 }
 
+function get_label_from_node(parent_node, node)
+{
+    var out_div = null;
+
+    for(var i = 0; i < parent_node.children_list.length; i++)
+    {
+        if(parent_node.children_list[i].node === node)
+        {
+            out_div = parent_node.children_list[i].label;
+            break;
+        }
+    }
+
+    return out_div;
+}
+
 function update_child_label(parent_node, node)
 {
     for(var i = 0; i < parent_node.children_list.length; i++)
@@ -124,8 +140,10 @@ function modifiy_link(link)
     var node = link.node;
     var child_node = link.child_node;
 
-    var starting_point_x = node.left;
-    var starting_point_y = node.top;
+    var offset_div = get_label_from_node(node, child_node);
+
+    var starting_point_x = offset_div.offsetLeft + offset_div.offsetParent.offsetLeft;
+    var starting_point_y = offset_div.offsetTop + offset_div.offsetParent.offsetTop;
 
     var ending_point_x = child_node.left;
     var ending_point_y = child_node.top;
@@ -321,7 +339,6 @@ function create_node(parent_node)
     {
         var new_node = create_node(node);
         node.children.push(new_node);
-        create_link(node, new_node);
 
         var child_label = document.createElement("div");
         child_label.classList.add("node_label");
@@ -336,6 +353,8 @@ function create_node(parent_node)
         node.children_list.push(child);
 
         node.child_container.appendChild(child_label);
+
+        create_link(node, new_node);
     }
 
     node.resizer = document.createElement("div");
