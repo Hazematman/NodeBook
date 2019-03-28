@@ -42,6 +42,8 @@ body
     display:inline-flex;
     background-color: #535353;
     cursor: pointer;
+    margin: 0;
+    padding: 0;
 }
 
 .add_button:hover
