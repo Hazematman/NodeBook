@@ -5,14 +5,6 @@ var svgNS = "http://www.w3.org/2000/svg";
 
 var view_state = {dragging:false, x:0, y:0, zoom:100, dragging_node:false};
 
-function title_edit(e)
-{
-    if(e.which == 13)
-    {
-        e.preventDefault();
-    }
-}
-
 function set_view_state()
 {
     var view = document.getElementById("graph_view");
@@ -116,6 +108,17 @@ function move_node(node, x, y)
     }
 }
 
+function update_child_label(parent_node, node)
+{
+    for(var i = 0; i < parent_node.children_list.length; i++)
+    {
+        if(parent_node.children_list[i].node === node)
+        {
+            parent_node.children_list[i].label.innerHTML = node.title.innerHTML;
+        }
+    }
+}
+
 function modifiy_link(link)
 {
     var node = link.node;
@@ -188,6 +191,7 @@ function create_node(parent_node)
             dragging:false, 
             move_dragging:false, width:200, height:200, top: 10, left: 10, 
             children: [], 
+            children_list: [],
             parent_node: parent_node,
             links: [],
         };
@@ -241,6 +245,22 @@ function create_node(parent_node)
         view.addEventListener("mouseup", stop_move_drag);
     }
 
+    var title_edit = function(e)
+    {
+        if(e.which == 13)
+        {
+            e.preventDefault();
+        }
+    }
+
+    var text_change = function(e)
+    {
+        if(node.parent_node !== null)
+        {
+            update_child_label(node.parent_node, node);
+        }
+    }
+
     node.title = document.createElement("div");
     node.title.innerHTML = "Title";
     node.title.contentEditable = "true";
@@ -248,6 +268,7 @@ function create_node(parent_node)
     node.title.classList.add("node_title");
 
     node.title.addEventListener('keypress', title_edit);
+    node.title.addEventListener('input', text_change);
     node.title.addEventListener('mousedown', start_move_drag); 
 
     node.body = document.createElement("p");
@@ -301,6 +322,20 @@ function create_node(parent_node)
         var new_node = create_node(node);
         node.children.push(new_node);
         create_link(node, new_node);
+
+        var child_label = document.createElement("div");
+        child_label.classList.add("node_label");
+        child_label.innerHTML = new_node.title.innerHTML;
+
+        var child = 
+        {
+            node: new_node,
+            label: child_label,
+        };
+
+        node.children_list.push(child);
+
+        node.child_container.appendChild(child_label);
     }
 
     node.resizer = document.createElement("div");
@@ -308,6 +343,9 @@ function create_node(parent_node)
     node.resizer.draggable = "false";
 
     node.resizer.addEventListener("mousedown", start_resize_drag);
+
+    /* Create a container to hold the list of all the children */
+    node.child_container = document.createElement("div");
 
     // Create button to add new node linked to this one
     node.add_button = document.createElement("div");
@@ -320,6 +358,7 @@ function create_node(parent_node)
     node.container.appendChild(node.title);
     node.container.appendChild(node.body);
     node.container.appendChild(node.resizer);
+    node.container.appendChild(node.child_container);
     node.container.appendChild(node.add_button);
 
     document.getElementById("graph_view").appendChild(node.container);

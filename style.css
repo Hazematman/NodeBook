@@ -1,6 +1,7 @@
-body {
+body 
+{
     margin: 0;
-    font-family: "sans";
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 [contenteditable]:focus {
@@ -69,13 +70,25 @@ body {
     margin-left: auto;
 }
 
-.node_add {
+.node_label 
+{
 	background-color: #595959;
 	border-style: solid;
 	border-width: 0;
 	border-bottom-width: 2px;
 	color: #ededed;
 	padding: 2px;
-	border-color: #000;
+	border-color: #292929;
+}
+
+.node_add 
+{
+	background-color: #595959;
+	border-style: solid;
+	border-width: 0;
+	border-bottom-width: 2px;
+	color: #ededed;
+	padding: 2px;
+	border-color: #292929;
     cursor: pointer;
 }
