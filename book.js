@@ -173,19 +173,26 @@ function modifiy_link(link)
 
     var path_string = `M ${new_start_x} ${new_start_y} L ${new_end_x} ${new_end_y}`;
     link.line.setAttributeNS(null, "d", path_string);
+    link.lineBG.setAttributeNS(null, "d", path_string);
 }
 
 function create_link(node, child_node)
 {
     // TODO figure out how to handle pointer events on lines
     var svg = document.createElementNS(svgNS, "svg");
-    svg.setAttributeNS(null, "pointer-events", "none");
+    svg.setAttributeNS(null, "pointer-events", "stroke");
     svg.style.position = "absolute";
 
+    var lineBG = document.createElementNS(svgNS, "path");
+    lineBG.setAttributeNS(null, "pointer-events", "stroke");
+    lineBG.setAttributeNS(null, "stroke", "red");
+    lineBG.setAttributeNS(null, "stroke-width", "3");
+
     var line = document.createElementNS(svgNS, "path");
-    line.setAttributeNS(null, "pointer-events", "none");
+    line.setAttributeNS(null, "pointer-events", "stroke");
     line.setAttributeNS(null, "stroke", "black");
 
+    svg.appendChild(lineBG);
     svg.appendChild(line)
 
     var view = document.getElementById("graph_view");
@@ -193,13 +200,64 @@ function create_link(node, child_node)
 
     // Create a link object based on this newly made SVG
     // and then move it so it is drawn right
-    var link = {node: node, child_node: child_node, svg: svg, line: line};
+    var link = {node: node, child_node: child_node, svg: svg, line: line, lineBG: lineBG};
     modifiy_link(link);
+
+    var del_link = function(evt)
+    {
+        console.log("Deleting link");
+
+        delete_link(link.node, link.child_node);
+    }
+
+
+    svg.addEventListener("mousedown", del_link);
 
     // Add this link to both nodes so that they
     // can move the link when the nodes move
     node.links.push(link);
     child_node.links.push(link);
+}
+
+function delete_link(node, child_node)
+{
+    var parent_index = -1;
+    var child_index = -1;
+    var link = null;
+
+    // Check to make sure link between nodes actually exists
+    for(var i = 0; i < node.links.length; i++)
+    {
+        if(node.links[i].child_node === child_node)
+        {
+            parent_index = i;
+            // If the link exists in both then it should be the same
+            link = node.links[i]
+        }
+    }
+
+    for(var i = 0; i < child_node.links.length; i++)
+    {
+        if(child_node.links[i].node === node)
+        {
+            child_index = i;
+        }
+    }
+
+    if(parent_index === -1 || child_index === -1 || link === null)
+    {
+        console.log("Trying to delete unconnected nodes!");
+        return;
+    }
+
+    // Remove link from DOM
+    var view = document.getElementById("graph_view");
+    link.svg.removeChild(link.line);
+    view.removeChild(link.svg);
+
+    // Delete link from lists
+    node.links.splice(parent_index, 1);
+    child_node.links.splice(child_index, 1);
 }
 
 function create_node(parent_node)
