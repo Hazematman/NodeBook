@@ -255,9 +255,21 @@ function delete_link(node, child_node)
     link.svg.removeChild(link.line);
     view.removeChild(link.svg);
 
+    // Remove child from
+    var child_label = node.children_list[parent_index];
+    node.children_list.splice(parent_index, 1);
+    node.child_container.removeChild(child_label.label);
+
     // Delete link from lists
     node.links.splice(parent_index, 1);
     child_node.links.splice(child_index, 1);
+
+    // Update all links in parent node since
+    // The labels would have moved now
+    for(var i=0; i < node.links.length; i++)
+    {
+        modifiy_link(node.links[i]);
+    }
 }
 
 function create_node(parent_node)
@@ -398,6 +410,7 @@ function create_node(parent_node)
         var new_node = create_node(node);
         node.children.push(new_node);
 
+        // Create a child node label under the parent node
         var child_label = document.createElement("div");
         child_label.classList.add("node_label");
         child_label.innerHTML = new_node.title.innerHTML;
