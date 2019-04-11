@@ -180,7 +180,7 @@ function create_link(node, child_node)
 {
     // TODO figure out how to handle pointer events on lines
     var svg = document.createElementNS(svgNS, "svg");
-    svg.setAttributeNS(null, "pointer-events", "stroke");
+    svg.setAttributeNS(null, "pointer-events", "none");
     svg.style.position = "absolute";
 
     var lineBG = document.createElementNS(svgNS, "path");
