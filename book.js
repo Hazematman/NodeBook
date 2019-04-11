@@ -3,6 +3,12 @@
 /* Start of program preamble for static data */
 var svgNS = "http://www.w3.org/2000/svg";
 
+var app_state = 
+{
+    create_link: false,
+    first_node: null,
+};
+
 var view_state = {dragging:false, x:0, y:0, zoom:100, dragging_node:false};
 
 function set_view_state()
@@ -255,9 +261,19 @@ function delete_link(node, child_node)
     link.svg.removeChild(link.line);
     view.removeChild(link.svg);
 
+    var child_list_index = -1;
+    // find matching child_label
+    for(var i = 0; i < node.children_list.length; i++)
+    {
+        if(node.children_list[i].node == child_node)
+        {
+            child_list_index = i;
+        }
+    }
+
     // Remove child from
-    var child_label = node.children_list[parent_index];
-    node.children_list.splice(parent_index, 1);
+    var child_label = node.children_list[child_list_index];
+    node.children_list.splice(child_list_index, 1);
     node.child_container.removeChild(child_label.label);
 
     // Delete link from lists
@@ -272,6 +288,34 @@ function delete_link(node, child_node)
     }
 }
 
+function node_add_child(node, new_node)
+{
+    node.children.push(new_node);
+
+    // Create a child node label under the parent node
+    var child_label = document.createElement("div");
+    child_label.classList.add("node_label");
+    child_label.innerHTML = new_node.title.innerHTML;
+
+    var child = 
+    {
+        node: new_node,
+        label: child_label,
+    };
+
+    node.children_list.push(child);
+
+    node.child_container.appendChild(child_label);
+
+    create_link(node, new_node);
+}
+
+function create_link_button()
+{
+    app_state.create_link = true;
+    app_state.first_node = null;
+}
+
 function create_node(parent_node)
 {
     var node = 
@@ -280,9 +324,32 @@ function create_node(parent_node)
             move_dragging:false, width:200, height:200, top: 10, left: 10, 
             children: [], 
             children_list: [],
-            parent_node: parent_node,
+            parent_nodes: [],
             links: [],
         };
+
+
+    if(parent_node !== null)
+    {
+        node.parent_nodes.push(parent_node);
+    }
+
+    var on_node_click = function(evt)
+    {
+        if(app_state.create_link)
+        {
+            if(app_state.first_node === null)
+            {
+                app_state.first_node = node;
+            }
+            else
+            {
+                node_add_child(app_state.first_node, node);
+                node.parent_nodes.push(app_state.first_node);
+                app_state.create_link = false;
+            }
+        }
+    }
 
     node.container = document.createElement("div");
     node.container.style.position = "absolute";
@@ -291,6 +358,8 @@ function create_node(parent_node)
     node.container.style.width = "200px";
     node.container.classList.add("node_container");
     node.container.classList.add("node_transform");
+
+    node.container.addEventListener("mousedown", on_node_click);
 
     var on_move_drag = function(evt)
     {
@@ -343,9 +412,9 @@ function create_node(parent_node)
 
     var text_change = function(e)
     {
-        if(node.parent_node !== null)
+        for(var i = 0; i < node.parent_nodes.length; i++)
         {
-            update_child_label(node.parent_node, node);
+            update_child_label(node.parent_nodes[i], node);
         }
     }
 
@@ -408,24 +477,7 @@ function create_node(parent_node)
     var create_child_node = function(evt)
     {
         var new_node = create_node(node);
-        node.children.push(new_node);
-
-        // Create a child node label under the parent node
-        var child_label = document.createElement("div");
-        child_label.classList.add("node_label");
-        child_label.innerHTML = new_node.title.innerHTML;
-
-        var child = 
-        {
-            node: new_node,
-            label: child_label,
-        };
-
-        node.children_list.push(child);
-
-        node.child_container.appendChild(child_label);
-
-        create_link(node, new_node);
+        node_add_child(node, new_node);
     }
 
     node.resizer = document.createElement("div");
