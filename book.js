@@ -6,6 +6,7 @@ var svgNS = "http://www.w3.org/2000/svg";
 var app_state = 
 {
     create_link: false,
+    delete_link: false,
     first_node: null,
 };
 
@@ -225,7 +226,41 @@ function create_link(node, child_node)
     child_node.links.push(link);
 }
 
-function delete_link(node, child_node)
+function delete_link(node_one, node_two)
+{
+    var parent = null;
+    var child = null;
+    for(var i = 0; i < node_one.links.length; i++)
+    {
+        if(node_one.links[i].child_node === node_two)
+        {
+            parent = node_one;
+            child = node_two;
+        }
+    }
+
+    if(parent === null)
+    {
+        for(var i = 0; i < node_two.links.length; i++)
+        {
+            if(node_two.links[i].child_node === node_one)
+            {
+                parent = node_two;
+                child = node_one;
+            }
+        }
+    }
+
+    if(parent === null)
+    {
+        console.log("Trying to delete unconnected nodes");
+        return;
+    }
+
+    delete_link_parent_child(parent, child);
+}
+
+function delete_link_parent_child(node, child_node)
 {
     var parent_index = -1;
     var child_index = -1;
@@ -254,6 +289,21 @@ function delete_link(node, child_node)
     {
         console.log("Trying to delete unconnected nodes!");
         return;
+    }
+
+    var parent_list_index = -1;
+    // Get index of parent in child parents list
+    for(var i = 0; i < child_node.parent_nodes.length; i++)
+    {
+        if(child_node.parent_nodes[i] === node)
+        {
+            parent_list_index = i;
+        }
+    }
+
+    if(parent_list_index !== -1)
+    {
+        child_node.parent_nodes.splice(parent_list_index, 1);
     }
 
     // Remove link from DOM
@@ -313,6 +363,14 @@ function node_add_child(node, new_node)
 function create_link_button()
 {
     app_state.create_link = true;
+    app_state.delete_link = false;
+    app_state.first_node = null;
+}
+
+function delete_link_button()
+{
+    app_state.create_link = false;
+    app_state.delete_link = true;
     app_state.first_node = null;
 }
 
@@ -336,7 +394,7 @@ function create_node(parent_node)
 
     var on_node_click = function(evt)
     {
-        if(app_state.create_link)
+        if(app_state.create_link || app_state.delete_link)
         {
             if(app_state.first_node === null)
             {
@@ -344,9 +402,17 @@ function create_node(parent_node)
             }
             else
             {
-                node_add_child(app_state.first_node, node);
-                node.parent_nodes.push(app_state.first_node);
+                if(app_state.create_link)
+                {
+                    node_add_child(app_state.first_node, node);
+                    node.parent_nodes.push(app_state.first_node);
+                }
+                else if(app_state.delete_link)
+                {
+                    delete_link(app_state.first_node, node);
+                }
                 app_state.create_link = false;
+                app_state.delete_link = false;
             }
         }
     }
