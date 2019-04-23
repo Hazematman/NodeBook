@@ -193,11 +193,12 @@ function create_link(node, child_node)
     var lineBG = document.createElementNS(svgNS, "path");
     lineBG.setAttributeNS(null, "pointer-events", "stroke");
     lineBG.setAttributeNS(null, "stroke", "red");
-    lineBG.setAttributeNS(null, "stroke-width", "3");
+    lineBG.setAttributeNS(null, "stroke-opacity", "0.0");
+    lineBG.setAttributeNS(null, "stroke-width", "5");
 
     var line = document.createElementNS(svgNS, "path");
-    line.setAttributeNS(null, "pointer-events", "stroke");
     line.setAttributeNS(null, "stroke", "black");
+    line.setAttributeNS(null, "stroke-width", "2");
 
     svg.appendChild(lineBG);
     svg.appendChild(line)
@@ -210,15 +211,18 @@ function create_link(node, child_node)
     var link = {node: node, child_node: child_node, svg: svg, line: line, lineBG: lineBG};
     modifiy_link(link);
 
-    var del_link = function(evt)
+    var line_mouse_over = function(evt)
     {
-        console.log("Deleting link");
-
-        delete_link(link.node, link.child_node);
+        lineBG.setAttributeNS(null, "stroke-opacity", "1.0");
     }
 
+    var line_mouse_leave = function(evt)
+    {
+        lineBG.setAttributeNS(null, "stroke-opacity", "0.0");
+    }
 
-    svg.addEventListener("mousedown", del_link);
+    lineBG.addEventListener("mouseenter", line_mouse_over);
+    lineBG.addEventListener("mouseleave", line_mouse_leave);
 
     // Add this link to both nodes so that they
     // can move the link when the nodes move
