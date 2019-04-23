@@ -383,7 +383,7 @@ function create_node(parent_node)
     var node = 
         {
             dragging:false, 
-            move_dragging:false, width:200, height:200, top: 10, left: 10, 
+            move_dragging:false, width:200, height:200, top: 10, left: 310, 
             children: [], 
             children_list: [],
             parent_nodes: [],
@@ -423,8 +423,8 @@ function create_node(parent_node)
 
     node.container = document.createElement("div");
     node.container.style.position = "absolute";
-    node.container.style.top = "10px";
-    node.container.style.left = "10px";
+    node.container.style.top = `${node.top}px`;
+    node.container.style.left = `${node.left}px`;
     node.container.style.width = "200px";
     node.container.classList.add("node_container");
     node.container.classList.add("node_transform");
