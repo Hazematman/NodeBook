@@ -8,6 +8,7 @@ var app_state =
     create_link: false,
     delete_link: false,
     first_node: null,
+    nodes: [],
 };
 
 var view_state = {dragging:false, x:0, y:0, zoom:100, dragging_node:false};
@@ -64,6 +65,8 @@ function start_view_drag(evt)
     var view = document.getElementById("graph_view");
     var container = document.getElementById("graph_container");
     var element_over = document.elementFromPoint(evt.clientX, evt.clientY);
+
+    console.log("HELLO");
 
     if(!view_state.dragging_node && (element_over === view || element_over === container))
     {
@@ -482,6 +485,8 @@ function create_node(parent_node)
 
     var text_change = function(e)
     {
+        update_tree_node_label(node);
+
         for(var i = 0; i < node.parent_nodes.length; i++)
         {
             update_child_label(node.parent_nodes[i], node);
@@ -575,5 +580,49 @@ function create_node(parent_node)
 
     document.getElementById("graph_view").appendChild(node.container);
 
+    node.tree_node = document.createElement("div");
+    node.tree_node.classList.add("tree_node");
+    node.tree_node.innerHTML = node.title.innerHTML;
+
+    var tree_container = document.getElementById("tree_container2");
+    tree_container.appendChild(node.tree_node);
+
+    app_state.nodes.push(node);
+
+
     return node;
+}
+
+function update_tree_node_label(node)
+{
+    node.tree_node.innerHTML = node.title.innerHTML;
+}
+
+
+/* This is a simple function to update the entire
+ * Tree view on the side of the app
+ * A better approach would be to add and delete
+ * elements as they come in */
+/* Don't call this function */
+function update_tree()
+{
+    var tree_container = document.getElementById("tree_container2");
+
+    /* Delete all the childern in the tree */
+    while(tree_container.firstChild)
+    {
+        tree_container.removeChild(tree_container.firstChild);
+    }
+
+    /* Now create a node for ever child */
+    for(var i=0; i < app_state.nodes.length; i++)
+    {
+        var node = app_state.nodes[i];
+
+        var div = document.createElement("div");
+        div.classList.add("tree_node");
+        div.innerHTML = node.title.innerHTML;
+
+        tree_container.appendChild(div);
+    }
 }

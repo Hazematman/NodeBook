@@ -1,8 +1,14 @@
+html
+{
+    width: 100%;
+    height: 100%;
+}
 body 
 {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 
 [contenteditable]:focus {
@@ -14,7 +20,6 @@ body
     background-color: #737373;
     height: 100%;
     width: 100%;
-    position: absolute;
     overflow: initial;
     z-index: 0;
 }
@@ -41,20 +46,33 @@ body
 #tree_container
 {
     height: 100%;
-    position: absolute;
     background-color: #595959;
-    min-width: 300px;
+    width: 300px;
     z-index: 1;
+    overflow: auto;
 }
 
-span 
+#outline
+{
+    padding: 2px;
+    padding-bottom: 4px;
+    font-size: 175%;
+    color: #ededed;
+    white-space: nowrap;
+    overflow: hidden;
+    border-style: solid;
+    border-width: 0;
+    border-bottom-width: 2px;
+    border-color: #ededed;
+}
+
+#spanner 
 {
     display: flex;
     background-color: #737373;
     overflow: hidden;
     width: 100%;
     height: 100%;
-    position: absolute;
     z-index: -1;
 }
 
@@ -138,4 +156,14 @@ span
 	padding: 2px;
 	border-color: #292929;
     cursor: pointer;
+}
+
+.tree_node
+{
+    padding: 2px;
+    font-size: 150%;
+    color: #ededed;
+    white-space: nowrap;
+    overflow: hidden;
+    text-indent: 1em;
 }
