@@ -79,7 +79,7 @@ body
     overflow: hidden;
     border-style: solid;
     border-width: 0;
-    border-bottom-width: 2px;
+    border-bottom-width: 1.5px;
     border-color: #ededed;
 }
 
