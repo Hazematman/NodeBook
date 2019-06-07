@@ -15,6 +15,19 @@ body
     outline: 0px solid transparent;
 }
 
+#holder
+{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 300px auto;
+    grid-template-rows: 64px auto;
+    grid-template-areas:
+    "header header"
+    "tree area"
+    "tree area"
+}
+
 #graph_view 
 {
     background-color: #737373;
@@ -30,6 +43,7 @@ body
     width: 100%;
     height: 100%;
     overflow: hidden;
+    grid-area: area;
 }
 
 #title_bar {
@@ -41,6 +55,8 @@ body
 	border-bottom: 4px;
 	border-color: #292929;
 	border-style: solid;
+	z-index: 2;
+	grid-area: header;
 }
 
 #tree_container
@@ -50,6 +66,7 @@ body
     width: 300px;
     z-index: 1;
     overflow: auto;
+    grid-area: tree;
 }
 
 #outline
@@ -64,16 +81,6 @@ body
     border-width: 0;
     border-bottom-width: 2px;
     border-color: #ededed;
-}
-
-#spanner 
-{
-    display: flex;
-    background-color: #737373;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
 }
 
 .add_button

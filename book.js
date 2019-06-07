@@ -386,7 +386,7 @@ function create_node(parent_node)
     var node = 
         {
             dragging:false, 
-            move_dragging:false, width:200, height:200, top: 10, left: 310, 
+            move_dragging:false, width:200, height:200, top: 0, left: 0, 
             children: [], 
             children_list: [],
             parent_nodes: [],
