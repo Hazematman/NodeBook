@@ -3,6 +3,13 @@
 /* Start of program preamble for static data */
 var svgNS = "http://www.w3.org/2000/svg";
 
+/* Enum for node types */
+const NodeTypeEnum =
+{
+    node_text: 1,
+    node_chapter: 2,
+}
+
 var app_state = 
 {
     create_link: false,
@@ -381,7 +388,7 @@ function delete_link_button()
     app_state.first_node = null;
 }
 
-function create_node(parent_node)
+function create_node(parent_node, node_type=NodeTypeEnum.node_text)
 {
     var node = 
         {
